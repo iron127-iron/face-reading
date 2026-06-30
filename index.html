@@ -21,24 +21,16 @@ h1{font-size:36px;color:#ffd700;margin:20px 0 10px;letter-spacing:8px}
 .wrap img{max-width:100%;max-height:60vh;border-radius:8px;display:block}
 .wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 .acts{margin-top:16px}
-.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,215,0,0.1);border-radius:10px;padding:14px 18px;margin:8px 0;cursor:pointer}
-.card h4{color:#ffd700;font-size:14px}
-.card p{color:#b0a090;font-size:14px;line-height:1.8;margin-top:8px;display:none}
-.card.on p{display:block}
-.gr{display:grid;gap:12px;margin:16px 0}
 .fc{display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,215,0,0.08);border-radius:12px;margin:8px 0}
 .fi{font-size:32px}
 .fb{height:6px;background:#222;border-radius:3px;margin:4px 0;overflow:hidden}
 .ff{height:100%;background:linear-gradient(90deg,#8b0000,#ffd700);border-radius:3px}
 .fft{display:flex;justify-content:space-between;font-size:13px}
-.lv{font-size:12px;padding:2px 10px;border-radius:10px}
-.l1{background:rgba(0,255,136,0.15);color:#0f8}
-.l2{background:rgba(255,215,0,0.15);color:#fd0}
-.l3{background:rgba(255,255,255,0.08);color:#a90}
-.l4{background:rgba(255,107,107,0.15);color:#f66}
-.ov{background:rgba(255,215,0,0.03);border:1px solid rgba(255,215,0,0.1);border-radius:12px;padding:20px;margin-top:16px}
-.ov h3{color:#ffd700;margin-bottom:8px}
-.ov p{font-size:15px;line-height:2;color:#b0a090;text-indent:2em}
+.lv{font-size:16px;padding:4px 16px;border-radius:12px;font-weight:700}
+.l1{background:rgba(0,255,136,0.2);color:#0f8}
+.l2{background:rgba(255,215,0,0.2);color:#fd0}
+.l3{background:rgba(255,255,255,0.1);color:#a90}
+.l4{background:rgba(255,107,107,0.2);color:#f66}
 .ds{font-size:12px;color:#555;margin-top:16px;padding-top:12px;border-top:1px solid #222}
 input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 </style>
@@ -266,26 +258,6 @@ function analyze() {
     fortunes.push({ name: ft.name, icon: ft.icon, score: Math.round(s), level: lvl });
   }
 
-  var scores = [];
-  for (var k2 in features) { scores.push(features[k2].score); }
-  var total = 0;
-  for (var i3 = 0; i3 < scores.length; i3++) { total += scores[i3]; }
-  var avg = Math.round(total / scores.length);
-
-  var bestKey = '', worstKey = '', bestScore = -1, worstScore = 999;
-  for (var k3 in features) {
-    if (features[k3].score > bestScore) { bestScore = features[k3].score; bestKey = k3; }
-    if (features[k3].score < worstScore) { worstScore = features[k3].score; worstKey = k3; }
-  }
-  var overall = '面相綜合評分 ' + avg + ' 分。' + features[bestKey].name + '最為出眾，是您運勢的強項；' + features[worstKey].name + '則需多加留意，可透過後天修養補足。';
-
-  var fhtml = '';
-  for (var k4 in features) {
-    var f = features[k4];
-    var c = f.score >= 70 ? '#0f8' : f.score >= 50 ? '#fd0' : '#f66';
-    fhtml += '<div class="card" onclick="this.classList.toggle(\'on\')"><h4>' + f.name + ' 「' + f.label + '」 <span style="float:right;color:' + c + '">' + f.score + '分 ▼</span></h4><p>' + f.text + '</p></div>';
-  }
-
   var fthtml = '';
   for (var i4 = 0; i4 < fortunes.length; i4++) {
     var ff = fortunes[i4];
@@ -296,7 +268,7 @@ function analyze() {
   var now = new Date();
   var ts = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0') + ' ' + String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':' + String(now.getSeconds()).padStart(2,'0');
 
-  RES.innerHTML = '<div style="background:linear-gradient(135deg,rgba(20,15,10,0.95),rgba(10,8,5,0.95));border:1px solid rgba(255,215,0,0.15);border-radius:16px;padding:32px 24px;margin-top:20px;text-align:left"><div style="text-align:center;margin-bottom:24px"><div style="font-size:44px;color:#ffd700">☰</div><h2 style="font-size:24px;color:#ffd700;letter-spacing:6px;margin-top:4px">面相分析報告</h2><div style="font-size:13px;color:#666;margin-top:4px">⚡ ' + ts + '</div></div><div style="text-align:center;color:#ffd700;font-size:16px;letter-spacing:4px;margin:20px 0 12px">◈ 五官解析 ◈</div><div class="gr">' + fhtml + '</div><div style="text-align:center;color:#ffd700;font-size:16px;letter-spacing:4px;margin:20px 0 12px">◈ 運勢總覽 ◈</div>' + fthtml + '<div class="ov"><h3>📜 綜合命評</h3><p>' + overall + '</p></div><div class="ds">⚠️ 本分析僅供娛樂參考，命運掌握在自己手中</div></div>';
+  RES.innerHTML = '<div style="background:linear-gradient(135deg,rgba(20,15,10,0.95),rgba(10,8,5,0.95));border:1px solid rgba(255,215,0,0.15);border-radius:16px;padding:32px 24px;margin-top:20px;text-align:left"><div style="text-align:center;margin-bottom:24px"><div style="font-size:44px;color:#ffd700">☰</div><h2 style="font-size:24px;color:#ffd700;letter-spacing:6px;margin-top:4px">面相結果</h2><div style="font-size:13px;color:#666;margin-top:4px">⚡ ' + ts + '</div></div>' + fthtml + '<div class="ds">⚠️ 本分析僅供娛樂參考</div></div>';
 
   RES.style.display = 'block';
   RES.scrollIntoView({ behavior: 'smooth' });
