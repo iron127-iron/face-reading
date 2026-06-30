@@ -320,6 +320,12 @@ function startCamera() {
   if (isProcessing) return;
   isProcessing = true;
 
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('⚠️ 相機功能需要 HTTPS 或 localhost 才能使用，請改用選擇照片');
+    isProcessing = false;
+    return;
+  }
+
   navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 640, height: 480 } })
     .then(stream => {
       const video = document.createElement('video');
@@ -348,7 +354,12 @@ function startCamera() {
       window._cameraStream = stream;
     })
     .catch(err => {
-      showToast('無法開啟相機，請確認相機權限');
+      const hint = document.getElementById('cameraHint');
+      if (hint) {
+        hint.textContent = '⚠️ 無法開啟相機，請確認相機權限或改用選擇照片。提示：相機需要 HTTPS 連線';
+        hint.style.display = 'block';
+      }
+      showToast('⚠️ 無法開啟相機，請改用選擇照片');
       isProcessing = false;
     });
 }
@@ -376,6 +387,12 @@ function capturePhoto(btn) {
   }, 'image/jpeg');
 }
 
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  handleFile(file);
+}
+
 function handleFile(file) {
   const reader = new FileReader();
   reader.onload = async function(e) {
@@ -389,7 +406,7 @@ function handleFile(file) {
           <canvas id="faceCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;"></canvas>
         </div>
         <div class="preview-actions">
-          <button class="btn btn-secondary" onclick="resetUpload()">重新拍照</button>
+          <button class="btn btn-secondary" onclick="resetUpload()">重新選擇</button>
           <button class="btn btn-primary" id="analyzeBtn" onclick="toggleAnalysis()">
             🔮 開始看相
           </button>
@@ -408,7 +425,7 @@ function handleFile(file) {
       canvas.style.height = img.offsetHeight + 'px';
     };
 
-    showToast('✅ 拍照成功！點擊「開始看相」進行分析');
+    showToast('✅ 照片上傳成功！點擊「開始看相」進行分析');
   };
   reader.readAsDataURL(file);
 }
@@ -417,11 +434,18 @@ function resetUpload() {
   document.getElementById('uploadSection').innerHTML = `
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">☯</div>
-      <h3>拍照看面相</h3>
-      <p>請允許相機權限，拍攝清晰的正面照</p>
-      <button class="btn btn-primary" onclick="startCamera()">
-        📸 開啟相機拍照
-      </button>
+      <h3>上傳照片看面相</h3>
+      <p>請上傳清晰的正面照片（JPG / PNG）</p>
+      <input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="display:none">
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="document.getElementById('photoInput').click()">
+          📁 選擇照片
+        </button>
+        <button class="btn btn-secondary" onclick="startCamera()">
+          📸 拍照
+        </button>
+      </div>
+      <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
     </div>
   `;
   document.getElementById('results').style.display = 'none';
@@ -632,4 +656,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+  if (!isSecure) {
+    const hint = document.getElementById('cameraHint');
+    if (hint) {
+      hint.textContent = '💡 目前使用 HTTP，相機功能僅支援 HTTPS。請改用「選擇照片」上傳圖片';
+      hint.style.display = 'block';
+    }
+  }
+
+  document.querySelector('.upload-area')?.addEventListener('dragover', e => { e.preventDefault(); });
+  document.querySelector('.upload-area')?.addEventListener('dragleave', e => { e.preventDefault(); });
+  document.querySelector('.upload-area')?.addEventListener('drop', e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleFile(file);
+    else showToast('⚠️ 請上傳圖片檔案');
+  });
 });

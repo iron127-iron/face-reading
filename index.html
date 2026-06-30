@@ -28,11 +28,18 @@
     <section id="uploadSection" style="display:none;">
       <div class="upload-area" id="uploadArea">
         <div class="upload-icon">☯</div>
-        <h3>拍照看面相</h3>
-        <p>請允許相機權限，拍攝清晰的正面照</p>
-        <button class="btn btn-primary" id="cameraBtn" onclick="startCamera()">
-          📸 開啟相機拍照
-        </button>
+        <h3>上傳照片看面相</h3>
+        <p>請上傳清晰的正面照片（JPG / PNG）</p>
+        <input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="display:none">
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="document.getElementById('photoInput').click()">
+            📁 選擇照片
+          </button>
+          <button class="btn btn-secondary" id="cameraBtn" onclick="startCamera()">
+            📸 拍照
+          </button>
+        </div>
+        <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
       </div>
     </section>
 
