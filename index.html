@@ -111,9 +111,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="upload-icon">☯</div>
       <h3>上傳照片看面相</h3>
       <p>請上傳清晰的正面照片（JPG / PNG）</p>
-      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="position:absolute;opacity:0;width:1px;height:1px;z-index:-1">
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-primary" onclick="pickFile()">📁 選擇照片</button>
+        <label for="photoInput" class="btn btn-primary" style="cursor:pointer">📁 選擇照片</label>
         <button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button>
       </div>
       <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
@@ -167,10 +167,6 @@ function init(){
     hint.style.display='block';
   }
 
-  document.getElementById('photoInput').addEventListener('change',function(e){
-    const f=e.target.files[0];if(f)handleFile(f);
-  });
-
   const wa=document.querySelector('.upload-area');
   if(wa){
     wa.addEventListener('dragover',function(e){e.preventDefault()});
@@ -186,8 +182,6 @@ function init(){
   const wb=document.getElementById('webhookUrl');
   if(wb)wb.addEventListener('change',function(){localStorage.setItem('discord_webhook',wb.value)});
 }
-
-function pickFile(){document.getElementById('photoInput').click()}
 
 document.addEventListener('DOMContentLoaded',init);
 
@@ -212,10 +206,9 @@ function handleFile(file){
 }
 
 function resetUpload(){
-  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput" accept="image/*" style="display:none"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="pickFile()">📁 選擇照片</button><button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
+  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="position:absolute;opacity:0;width:1px;height:1px;z-index:-1"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><label for="photoInput" class="btn btn-primary" style="cursor:pointer">📁 選擇照片</label><button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
   document.getElementById('results').style.display='none';
   document.getElementById('shareSection').style.display='none';
-  document.getElementById('photoInput').addEventListener('change',function(e){const f=e.target.files[0];if(f)handleFile(f)});
 }
 
 function analyze(){
