@@ -331,8 +331,6 @@ async function shareToDiscord(){
   if(!url){toast('⚠️ 請輸入 Discord Webhook 網址');wb.focus();return}
   if(!url.startsWith('https://discord.com/api/webhooks/')){toast('⚠️ Webhook 網址格式不正確');return}
 
-  if(!confirm('確定要將面相分析結果分享到 Discord 嗎？'))return;
-
   const btn=document.querySelector('.share-btn');
   btn.disabled=true;btn.textContent='⏳ 上傳中...';
 
