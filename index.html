@@ -135,6 +135,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </section>
 
+
   <footer class="footer">面相算命 · AI 智慧分析 · 僅供娛樂參考</footer>
 </div>
 
@@ -168,8 +169,6 @@ function init(){
     hint.style.display='block';
   }
 
-  const wb=document.getElementById('webhookUrl');
-  if(wb)wb.addEventListener('change',function(){localStorage.setItem('discord_webhook',wb.value)});
 }
 
 document.addEventListener('DOMContentLoaded',init);
@@ -267,9 +266,15 @@ function analyze(){
 function startCamera(){
   if(isProcessing)return;
   isProcessing=true;
+
+  const btn=document.querySelector('button[onclick*="startCamera"]');
+  if(btn){btn.textContent='⏳ 請求相機中...';btn.disabled=true;btn.style.opacity='0.6'}
+
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    toast('⚠️ 相機需要 HTTPS 連線，請改用選擇照片');
-    isProcessing=false;return;
+    if(btn){btn.textContent='📸 開啟相機拍照';btn.disabled=false;btn.style.opacity='1'}
+    toast('⚠️ 相機需要 HTTPS 連線才能使用');
+    isProcessing=false;
+    return;
   }
   navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:640,height:480}}).then(function(s){
     cameraStream=s;
@@ -283,9 +288,11 @@ function startCamera(){
       if(v2)v2.srcObject=s;
     },100);
   }).catch(function(){
+    const btn=document.querySelector('button[onclick*="startCamera"]');
+    if(btn){btn.textContent='📸 開啟相機拍照';btn.disabled=false;btn.style.opacity='1'}
     const hint=document.getElementById('cameraHint');
-    if(hint){hint.textContent='⚠️ 無法開啟相機，請確認權限或改用選擇照片';hint.style.display='block'}
-    toast('⚠️ 無法開啟相機，請改用選擇照片');
+    if(hint){hint.textContent='⚠️ 無法開啟相機，請確認權限';hint.style.display='block'}
+    toast('⚠️ 無法開啟相機，請確認權限');
     isProcessing=false;
   });
 }
@@ -308,46 +315,37 @@ function capture(btn){
 }
 
 async function shareToDiscord(){
-  const wb=document.getElementById('webhookUrl');
-  const url=wb.value.trim();
-  if(!url){toast('⚠️ 請輸入 Discord Webhook 網址');wb.focus();return}
-  if(!url.startsWith('https://discord.com/api/webhooks/')){toast('⚠️ Webhook 網址格式不正確');return}
+  const url=document.getElementById('webhookUrl').value.trim();
+  if(!url||!url.startsWith('https://discord.com/api/webhooks/'))return;
 
   const btn=document.querySelector('.share-btn');
-  btn.disabled=true;btn.textContent='⏳ 上傳中...';
+  if(!btn)return;
+  btn.textContent='⏳ 上傳中...';
 
   try{
     const img=document.getElementById('previewImg');
     const tc=document.createElement('canvas');
     tc.width=img.naturalWidth||img.width;tc.height=img.naturalHeight||img.height;
     tc.getContext('2d').drawImage(img,0,0);
-    const id=tc.toDataURL('image/jpeg',0.9);
-    const blob=await(await fetch(id)).blob();
+    const blob=await(await fetch(tc.toDataURL('image/jpeg',0.9))).blob();
     const fd=new FormData();
     fd.append('file',blob,'face_reading.jpg');
 
     let msg='**🔮 面相分析結果**\n⏰ '+fmt()+'\n\n**📋 五官解析：**\n';
     document.querySelectorAll('.feature-card').forEach(function(c){
-      const n=c.querySelector('.feature-name')?.textContent||'';
-      const l=c.querySelector('.feature-label')?.textContent||'';
-      const s=c.querySelector('.feature-score')?.textContent||'';
-      msg+='▸ '+n+' '+l+' — '+s+'\n';
+      msg+='▸ '+(c.querySelector('.feature-name')?.textContent||'')+' '+(c.querySelector('.feature-label')?.textContent||'')+' — '+(c.querySelector('.feature-score')?.textContent||'')+'\n';
     });
     msg+='\n**📊 運勢總覽：**\n';
     document.querySelectorAll('.fortune-card').forEach(function(c){
-      const n=c.querySelector('h4')?.textContent||'';
-      const s=c.querySelector('.fortune-score')?.textContent||'';
-      const l=c.querySelector('.fortune-level')?.textContent||'';
-      msg+='▸ '+n+' '+s+' ['+l+']\n';
+      msg+='▸ '+(c.querySelector('h4')?.textContent||'')+' '+(c.querySelector('.fortune-score')?.textContent||'')+' ['+(c.querySelector('.fortune-level')?.textContent||'')+']\n';
     });
-    const ov=document.querySelector('.overall-text')?.textContent||'';
-    msg+='\n**📜 綜合命評：**\n'+ov;
+    msg+='\n**📜 綜合命評：**\n'+(document.querySelector('.overall-text')?.textContent||'');
 
     fd.append('payload_json',JSON.stringify({content:msg,embeds:[{title:'📷 面相照片',image:{url:'attachment://face_reading.jpg'},color:0xFFD700}]}));
     const r=await fetch(url,{method:'POST',body:fd});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-  }catch(e){console.error(e)}
-  finally{btn.disabled=false;btn.textContent='📤 分享到 Discord'}
+    if(!r.ok)throw new Error();
+  }catch(e){}
+  finally{btn.textContent='📤 分享到 Discord'}
 }
 </script>
 </body>
