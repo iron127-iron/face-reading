@@ -185,33 +185,6 @@ function analyze() {
   var ctx = canvas.getContext('2d');
   ctx.drawImage(img, 0, 0, w, h);
 
-  var regions = [
-    { id: 'forehead', label: '額頭', x: w*0.2, y: h*0.02, w: w*0.6, h: h*0.2 },
-    { id: 'eyebrows', label: '眉', x: w*0.15, y: h*0.2, w: w*0.7, h: h*0.06 },
-    { id: 'eyes', label: '眼', x: w*0.15, y: h*0.27, w: w*0.7, h: h*0.08 },
-    { id: 'nose', label: '鼻', x: w*0.35, y: h*0.35, w: w*0.3, h: h*0.18 },
-    { id: 'mouth', label: '口', x: w*0.25, y: h*0.53, w: w*0.5, h: h*0.08 },
-    { id: 'chin', label: '下巴', x: w*0.2, y: h*0.62, w: w*0.6, h: h*0.25 },
-    { id: 'ears', label: '耳', x: w*0.05, y: h*0.22, w: w*0.15, h: h*0.25 }
-  ];
-  for (var i = 0; i < regions.length; i++) {
-    var r = regions[i];
-    ctx.fillStyle = 'rgba(255,215,0,0.08)';
-    ctx.fillRect(r.x, r.y, r.w, r.h);
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.4;
-    ctx.setLineDash([4, 3]);
-    ctx.strokeRect(r.x, r.y, r.w, r.h);
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 0.7;
-    ctx.fillStyle = '#FFD700';
-    ctx.font = 'bold ' + Math.max(12, Math.round(h*0.025)) + 'px "Noto Serif TC", "SimSun", serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(r.label, r.x + r.w/2, r.y - 4);
-    ctx.globalAlpha = 1;
-  }
-
   var m = {
     foreheadRatio: 0.24 + Math.random()*0.14,
     eyebrowGap: 0.02 + Math.random()*0.05,
