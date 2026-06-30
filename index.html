@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面相算命 - AI面相分析</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous">
+  </script>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-icon">☯</div>
+      <h1>面相算命</h1>
+      <p class="subtitle">AI 智慧面相分析 · <span>傳統命理</span> · 即時運勢</p>
+    </header>
+
+    <!-- Status -->
+    <div class="status-bar" id="modelStatus">
+      <div class="spinner"></div>
+      <span>正在載入面相分析模型...</span>
+    </div>
+
+    <!-- Upload Section -->
+    <section id="uploadSection" style="display:none;">
+      <div class="upload-area" id="uploadArea">
+        <div class="upload-icon">☯</div>
+        <h3>拍照看面相</h3>
+        <p>請允許相機權限，拍攝清晰的正面照</p>
+        <button class="btn btn-primary" id="cameraBtn" onclick="startCamera()">
+          📸 開啟相機拍照
+        </button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section id="results" style="display:none;"></section>
+
+    <!-- Share to Discord -->
+    <section id="shareSection" style="display:none;">
+      <div class="share-section">
+        <h3>📤 分享到 Discord</h3>
+        <div class="share-input-group">
+          <input type="url" id="webhookUrl"
+          placeholder="請輸入 Discord Webhook 網址..."
+          value="https://discord.com/api/webhooks/1521349729576030379/okpV67K1t8RF3IIDKW3uHs6LN3arJ_KWLTXUvsWvF2zolsaJqmaXWImpvs4ScGCr-tpx">
+        </div>
+        <button class="share-btn" onclick="shareToDiscord()">
+          📤 分享到 Discord
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      面相算命 · AI 智慧分析 · 僅供娛樂參考
+    </footer>
+  </div>
+
+  <script src="js/readings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
