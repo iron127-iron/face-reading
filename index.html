@@ -1,70 +1,375 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>面相算命 - AI面相分析</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>面相算命 - AI面相分析</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Serif TC','SimSun','PMingLiU',serif;background:#0a0a0f;color:#e0d5c1;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(139,0,0,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 50%,rgba(139,0,0,0.05) 0%,transparent 50%),radial-gradient(ellipse at 50% 0%,rgba(255,215,0,0.03) 0%,transparent 30%);pointer-events:none;z-index:0}
+.container{max-width:900px;margin:0 auto;padding:20px;position:relative;z-index:1}
+.header{text-align:center;padding:36px 20px 24px;position:relative}
+.header::after{content:'☰ ☷ ☯ ☷ ☰';display:block;font-size:14px;letter-spacing:8px;color:#8b0000;margin-top:12px;opacity:.6}
+.logo-icon{font-size:60px;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.3);animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.2)}50%{text-shadow:0 0 60px rgba(255,215,0,.4)}}
+.header h1{font-size:40px;font-weight:900;color:#ffd700;letter-spacing:12px;margin:8px 0;text-shadow:0 2px 20px rgba(255,215,0,.15)}
+.header .subtitle{font-size:15px;color:#a09080;letter-spacing:4px}
+.header .subtitle span{color:#ff6b6b}
+.status-bar{text-align:center;padding:10px 16px;margin:0 auto 20px;max-width:500px;background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.1);border-radius:8px}
+.upload-area{background:linear-gradient(135deg,rgba(20,15,10,.9),rgba(30,20,15,.9));border:2px dashed #3a3a5c;border-radius:16px;padding:50px 30px;text-align:center;position:relative;overflow:hidden}
+.upload-area::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(255,215,0,.03),transparent 70%);opacity:0;transition:opacity .4s}
+.upload-area:hover::before{opacity:1}
+.upload-area:hover{border-color:#ffd700}
+.upload-icon{font-size:64px;margin-bottom:12px;color:#ffd700;opacity:.6}
+.upload-area h3{font-size:22px;color:#e0d5c1;margin-bottom:6px}
+.upload-area p{color:#808080;font-size:14px;margin-bottom:20px}
+.btn{padding:12px 24px;border:none;border-radius:8px;font-family:inherit;font-size:15px;cursor:pointer;transition:all .3s;letter-spacing:2px;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,#8b0000,#cc0000);color:#ffd700;box-shadow:0 4px 20px rgba(139,0,0,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(139,0,0,.5)}
+.btn-secondary{background:rgba(255,255,255,.05);color:#a09080;border:1px solid #3a3a5c}
+.btn-secondary:hover{background:rgba(255,255,255,.1);color:#e0d5c1}
+.preview-container{text-align:center}
+.image-wrapper{position:relative;display:inline-block;max-width:100%;border-radius:12px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.preview-actions{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.results-container{background:linear-gradient(135deg,rgba(20,15,10,.95),rgba(10,8,5,.95));border:1px solid rgba(255,215,0,.15);border-radius:16px;padding:36px 28px;margin-top:24px;animation:fadeInUp .6s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.results-header{text-align:center;margin-bottom:28px}
+.results-header .bagua{font-size:44px;color:#ffd700;margin-bottom:6px}
+.results-header h2{font-size:26px;color:#ffd700;letter-spacing:6px}
+.reading-time{font-size:13px;color:#666;margin-top:6px}
+.section-title{text-align:center;font-size:18px;color:#ffd700;letter-spacing:6px;margin:28px 0 16px}
+.section-title::before,.section-title::after{content:'';display:inline-block;width:36px;height:1px;background:linear-gradient(90deg,transparent,#ffd700);vertical-align:middle;margin:0 10px}
+.section-title::after{background:linear-gradient(90deg,#ffd700,transparent)}
+.ornament{color:#8b0000;margin:0 4px}
+.features-grid{display:grid;gap:10px;margin-bottom:8px}
+.feature-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,215,0,.08);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .3s}
+.feature-card:hover{border-color:rgba(255,215,0,.2);background:rgba(255,255,255,.04)}
+.feature-header{display:flex;align-items:center;gap:10px;padding:14px 18px}
+.feature-name{font-weight:700;color:#ffd700;min-width:85px;font-size:14px}
+.feature-label{color:#e0d5c1;font-size:14px;flex:1}
+.feature-score{font-weight:700;font-size:17px;min-width:45px;text-align:right}
+.expand-hint{color:#555;font-size:12px;transition:transform .3s}
+.feature-card.expanded .expand-hint{transform:rotate(180deg)}
+.feature-detail{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .4s ease;padding:0 18px}
+.feature-card.expanded .feature-detail{max-height:200px;padding:0 18px 14px}
+.feature-detail p{color:#b0a090;font-size:14px;line-height:1.8}
+.fortunes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:28px}
+.fortune-card{display:flex;align-items:center;gap:14px;padding:18px;background:rgba(255,255,255,.02);border:1px solid rgba(255,215,0,.08);border-radius:12px;transition:all .3s}
+.fortune-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.fortune-icon{font-size:32px;flex-shrink:0}
+.fortune-info{flex:1}
+.fortune-info h4{font-size:14px;color:#e0d5c1;margin-bottom:6px}
+.fortune-bar{height:6px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.fortune-fill{height:100%;background:linear-gradient(90deg,#8b0000,#ffd700);border-radius:3px;transition:width 1s ease}
+.fortune-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.fortune-score{font-size:13px;color:#808080}
+.fortune-level{font-size:12px;padding:2px 10px;border-radius:10px;font-weight:700}
+.level-大吉{background:rgba(0,255,136,.15);color:#00ff88}
+.level-吉{background:rgba(255,215,0,.15);color:#ffd700}
+.level-中平{background:rgba(255,255,255,.08);color:#a09080}
+.level-末吉{background:rgba(255,107,107,.15);color:#ff6b6b}
+.overall-section{background:rgba(255,215,0,.03);border:1px solid rgba(255,215,0,.1);border-radius:12px;padding:22px;margin-top:22px}
+.overall-section h3{font-size:17px;color:#ffd700;margin-bottom:10px;text-align:center}
+.overall-text{font-size:15px;line-height:2;color:#b0a090;text-align:justify;text-indent:2em}
+.disclaimer{text-align:center;font-size:12px;color:#555;margin-top:20px;padding-top:14px;border-top:1px solid rgba(255,255,255,.05)}
+.share-section{margin-top:20px;padding:22px;background:rgba(255,255,255,.02);border:1px solid rgba(255,215,0,.1);border-radius:12px}
+.share-section h3{text-align:center;font-size:17px;color:#ffd700;margin-bottom:14px}
+.share-input-group{display:flex;gap:8px;margin-bottom:10px}
+.share-input-group input{flex:1;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid #3a3a5c;border-radius:8px;font-family:inherit;color:#e0d5c1;font-size:13px;transition:border-color .3s}
+.share-input-group input:focus{outline:none;border-color:#ffd700}
+.share-btn{width:100%;padding:12px;background:linear-gradient(135deg,#5865F2,#4752C4);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:15px;cursor:pointer;transition:all .3s;letter-spacing:2px}
+.share-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(88,101,242,.4)}
+.share-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:1000;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-content{background:#1a1a2e;border:1px solid rgba(255,215,0,.15);border-radius:16px;padding:28px;max-width:540px;width:90%;text-align:center}
+.modal-content h3{color:#ffd700;margin-bottom:14px}
+.modal-actions{display:flex;gap:12px;justify-content:center;margin-top:16px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(20,15,10,.95);border:1px solid rgba(255,215,0,.2);color:#e0d5c1;padding:14px 28px;border-radius:10px;font-family:inherit;font-size:14px;z-index:2000;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.footer{text-align:center;padding:32px 20px;color:#333;font-size:12px;letter-spacing:2px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0a0f}
+::-webkit-scrollbar-thumb{background:#3a3a5c;border-radius:3px}
+@media(max-width:600px){.container{padding:12px}.header h1{font-size:26px;letter-spacing:6px}.header{padding:24px 12px 16px}.upload-area{padding:36px 16px}.results-container{padding:20px 14px}.fortunes-grid{grid-template-columns:1fr}.feature-header{flex-wrap:wrap;gap:6px}.feature-name{min-width:65px}.share-input-group{flex-direction:column}.toast{max-width:90%;font-size:13px}}
+</style>
 </head>
 <body>
+<div class="container">
+  <header class="header">
+    <div class="logo-icon">☯</div>
+    <h1>面相算命</h1>
+    <p class="subtitle">AI 智慧面相分析 · <span>傳統命理</span> · 即時運勢</p>
+  </header>
 
-  <div class="container">
-    <!-- Header -->
-    <header class="header">
-      <div class="logo-icon">☯</div>
-      <h1>面相算命</h1>
-      <p class="subtitle">AI 智慧面相分析 · <span>傳統命理</span> · 即時運勢</p>
-    </header>
+  <div class="status-bar" id="modelStatus"><span>⏳ 載入中...</span></div>
 
-    <!-- Status -->
-    <div class="status-bar" id="modelStatus">
-      <span>⏳ 載入中...</span>
+  <section id="uploadSection" style="display:none;">
+    <div class="upload-area" id="uploadArea">
+      <div class="upload-icon">☯</div>
+      <h3>上傳照片看面相</h3>
+      <p>請上傳清晰的正面照片（JPG / PNG）</p>
+      <input type="file" id="photoInput" accept="image/*" style="display:none">
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="uploadBtn">📁 選擇照片</button>
+        <button class="btn btn-secondary" id="cameraBtn">📸 拍照</button>
+      </div>
+      <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
     </div>
+  </section>
 
-    <!-- Upload Section -->
-    <section id="uploadSection" style="display:none;">
-      <div class="upload-area" id="uploadArea">
-        <div class="upload-icon">☯</div>
-        <h3>上傳照片看面相</h3>
-        <p>請上傳清晰的正面照片（JPG / PNG）</p>
-        <input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="display:none">
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-          <button class="btn btn-primary" onclick="document.getElementById('photoInput').click()">
-            📁 選擇照片
-          </button>
-          <button class="btn btn-secondary" id="cameraBtn" onclick="startCamera()">
-            📸 拍照
-          </button>
-        </div>
-        <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
+  <section id="results" style="display:none;"></section>
+
+  <section id="shareSection" style="display:none;">
+    <div class="share-section">
+      <h3>📤 分享到 Discord</h3>
+      <div class="share-input-group">
+        <input type="url" id="webhookUrl"
+        placeholder="請輸入 Discord Webhook 網址..."
+        value="https://discord.com/api/webhooks/1521349729576030379/okpV67K1t8RF3IIDKW3uHs6LN3arJ_KWLTXUvsWvF2zolsaJqmaXWImpvs4ScGCr-tpx">
       </div>
-    </section>
+      <button class="share-btn" id="shareBtn">📤 分享到 Discord</button>
+    </div>
+  </section>
 
-    <!-- Results -->
-    <section id="results" style="display:none;"></section>
+  <footer class="footer">面相算命 · AI 智慧分析 · 僅供娛樂參考</footer>
+</div>
 
-    <!-- Share to Discord -->
-    <section id="shareSection" style="display:none;">
-      <div class="share-section">
-        <h3>📤 分享到 Discord</h3>
-        <div class="share-input-group">
-          <input type="url" id="webhookUrl"
-          placeholder="請輸入 Discord Webhook 網址..."
-          value="https://discord.com/api/webhooks/1521349729576030379/okpV67K1t8RF3IIDKW3uHs6LN3arJ_KWLTXUvsWvF2zolsaJqmaXWImpvs4ScGCr-tpx">
-        </div>
-        <button class="share-btn" onclick="shareToDiscord()">
-          📤 分享到 Discord
-        </button>
-      </div>
-    </section>
+<script>
+const FACE_READINGS = {forehead:{name:'額頭 / 天庭',desc:'主早年運勢（1-30歲），代表智慧與貴氣',traits:[{condition:m=>m.foreheadRatio>0.32,label:'額頭寬廣飽滿',text:'天庭飽滿，額頭寬廣，主聰明智慧過人，早年運勢亨通，貴人相助，學業事業皆有所成。',score:85},{condition:m=>m.foreheadRatio<0.26,label:'額頭較窄',text:'額頭偏窄，早年較為辛苦，需靠自身努力奮鬥，但中年後運勢漸佳。',score:55},{condition:m=>m.foreheadRatio>=0.26&&m.foreheadRatio<=0.32,label:'額頭適中',text:'額頭大小適中，平衡發展，早年平穩，智慧與運勢中庸，靠努力可成大器。',score:70}]},eyebrows:{name:'眉毛 / 眉',desc:'主兄弟宮，代表手足情誼與事業貴人',traits:[{condition:m=>m.eyebrowGap>0.05,label:'眉寬有距',text:'雙眉間距寬闊，心胸開闊，氣量大，善於交際，貴人運佳。',score:80},{condition:m=>m.eyebrowGap<0.03,label:'眉近相連',text:'雙眉距離較近，個性較為執著專注，易鑽牛角尖，要注意人際關係。',score:50},{condition:m=>m.eyebrowGap>=0.03&&m.eyebrowGap<=0.05,label:'眉距適中',text:'眉毛間距標準，性格穩重，待人處事得宜，貴人運平穩。',score:65}]},eyes:{name:'眼睛 / 眼',desc:'主心靈之窗，代表精神狀態與智慧',traits:[{condition:m=>m.eyeRatio>0.28,label:'大眼有神',text:'眼睛大而有神，熱情開朗，充滿魅力，領導力強，事業運佳。',score:85},{condition:m=>m.eyeRatio<0.22,label:'小眼精明',text:'眼睛偏小但目光銳利，心思縝密，觀察力強，善於理財。',score:70},{condition:m=>m.eyeRatio>=0.22&&m.eyeRatio<=0.28,label:'眼相適中',text:'眼睛大小適中，目光穩定，為人正直，判斷力準確，福祿雙全。',score:75}]},nose:{name:'鼻子 / 鼻',desc:'主財帛宮，代表財運與事業成就',traits:[{condition:m=>m.noseRatio>0.45,label:'鼻樑挺拔',text:'鼻樑高挺直貫，財運亨通，事業有成，中年運勢極佳，能聚財守業。',score:90},{condition:m=>m.noseRatio<0.38,label:'鼻樑較短',text:'鼻樑偏短，財運需靠努力積累，不宜投機，穩健理財方能致富。',score:55},{condition:m=>m.noseRatio>=0.38&&m.noseRatio<=0.45,label:'鼻相端正',text:'鼻子端正適中，財運平穩，正財運佳，一生衣食無憂。',score:70}]},mouth:{name:'嘴巴 / 口',desc:'主食祿宮，代表口福、人際關係與表達能力',traits:[{condition:m=>m.mouthRatio>0.38,label:'嘴大唇厚',text:'嘴型偏大，為人豪爽大方，善於交際，食祿豐厚，一生不愁吃穿。',score:80},{condition:m=>m.mouthRatio<0.30,label:'小嘴矜持',text:'嘴型偏小，個性內斂謹慎，說話有分寸，適合從事精細工作。',score:60},{condition:m=>m.mouthRatio>=0.30&&m.mouthRatio<=0.38,label:'嘴型標準',text:'嘴型大小適中，唇色紅潤，為人能言善道，人緣佳，福祿雙全。',score:75}]},chin:{name:'下巴 / 地閣',desc:'主晚年運勢（60歲後），代表毅力與福氣',traits:[{condition:m=>m.chinRatio>0.28,label:'下巴圓潤',text:'下巴圓潤飽滿，晚年運勢極佳，福祿雙全，子女孝順，生活安逸。',score:90},{condition:m=>m.chinRatio<0.22,label:'下巴較尖',text:'下巴偏尖，晚年需靠自身積累，個性較為理想主義，要注意理財。',score:50},{condition:m=>m.chinRatio>=0.22&&m.chinRatio<=0.28,label:'下巴適中',text:'下巴大小適中，晚年平穩，一生福祿均衡。',score:70}]},ears:{name:'耳朵 / 耳',desc:'主先天福氣，代表長壽與健康',traits:[{condition:m=>m.earRatio>0.35,label:'耳大垂厚',text:'耳朵大有垂珠，先天福氣深厚，長壽健康，一生貴人扶持。',score:90},{condition:m=>m.earRatio<0.28,label:'耳小貼腦',text:'耳朵偏小，個性低調穩重，雖先天福氣略薄，但後天努力可補。',score:55},{condition:m=>m.earRatio>=0.28&&m.earRatio<=0.35,label:'耳相端正',text:'耳朵大小適中，貼腦端正，一生平順安康，福壽雙全。',score:75}]}};
+const FORTUNE_TYPES=[{id:'career',name:'事業運',icon:'🏛️',weight:{forehead:.25,eyebrows:.15,eyes:.25,nose:.2,mouth:.05,chin:.05,ears:.05}},{id:'wealth',name:'財運',icon:'💰',weight:{forehead:.1,eyebrows:.05,eyes:.15,nose:.5,mouth:.1,chin:.05,ears:.05}},{id:'love',name:'感情運',icon:'❤️',weight:{forehead:.05,eyebrows:.1,eyes:.35,nose:.1,mouth:.25,chin:.1,ears:.05}},{id:'health',name:'健康運',icon:'🍃',weight:{forehead:.05,eyebrows:.05,eyes:.2,nose:.15,mouth:.15,chin:.1,ears:.3}},{id:'mentor',name:'貴人運',icon:'⭐',weight:{forehead:.25,eyebrows:.25,eyes:.15,nose:.1,mouth:.1,chin:.05,ears:.1}}];
 
-    <!-- Footer -->
-    <footer class="footer">
-      面相算命 · AI 智慧分析 · 僅供娛樂參考
-    </footer>
-  </div>
+let currentImage=null;
+let isProcessing=false;
+let cameraStream=null;
 
-  <script src="js/readings.js"></script>
-  <script src="js/app.js"></script>
+function fmt(){const d=new Date();const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())}
+
+function toast(msg){
+  const t=document.createElement('div');
+  t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  const st=document.getElementById('modelStatus');
+  st.innerHTML='✅ 面相分析已就緒，請上傳照片';
+  st.style.color='#00ff88';
+  document.getElementById('uploadSection').style.display='block';
+
+  const sec=window.location.protocol==='https:'||window.location.hostname==='localhost';
+  const hint=document.getElementById('cameraHint');
+  if(!sec&&hint){
+    hint.textContent='💡 目前使用 HTTP，相機僅支援 HTTPS。請用「選擇照片」';
+    hint.style.display='block';
+  }
+
+  document.getElementById('uploadBtn').addEventListener('click',function(){document.getElementById('photoInput').click()});
+  document.getElementById('cameraBtn').addEventListener('click',startCamera);
+  document.getElementById('photoInput').addEventListener('change',function(e){
+    const f=e.target.files[0];if(f)handleFile(f);
+  });
+  document.getElementById('shareBtn').addEventListener('click',shareToDiscord);
+
+  const wa=document.querySelector('.upload-area');
+  if(wa){
+    wa.addEventListener('dragover',function(e){e.preventDefault()});
+    wa.addEventListener('dragleave',function(e){e.preventDefault()});
+    wa.addEventListener('drop',function(e){
+      e.preventDefault();
+      const f=e.dataTransfer.files[0];
+      if(f&&f.type.startsWith('image/'))handleFile(f);
+      else toast('⚠️ 請上傳圖片檔案');
+    });
+  }
+
+  const wb=document.getElementById('webhookUrl');
+  if(wb)wb.addEventListener('change',function(){localStorage.setItem('discord_webhook',wb.value)});
+});
+
+function handleFile(file){
+  const r=new FileReader();
+  r.onload=function(e){
+    currentImage=e.target.result;
+    const us=document.getElementById('uploadSection');
+    us.innerHTML='<div class="preview-container"><div class="image-wrapper"><img id="previewImg" src="'+currentImage+'" style="max-width:100%;max-height:60vh;border-radius:8px"><canvas id="faceCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas></div><div class="preview-actions"><button class="btn btn-secondary" onclick="resetUpload()">重新選擇</button><button class="btn btn-primary" onclick="analyze()">🔮 開始看相</button></div></div>';
+    us.style.display='block';
+    document.getElementById('results').style.display='none';
+    document.getElementById('shareSection').style.display='none';
+    const img=document.getElementById('previewImg');
+    img.onload=function(){
+      const c=document.getElementById('faceCanvas');
+      c.style.width=img.offsetWidth+'px';
+      c.style.height=img.offsetHeight+'px';
+    };
+    toast('✅ 照片上傳成功！點擊「開始看相」進行分析');
+  };
+  r.readAsDataURL(file);
+}
+
+function resetUpload(){
+  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput2" accept="image/*" style="display:none"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" id="uploadBtn2">📁 選擇照片</button><button class="btn btn-secondary" id="cameraBtn2">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
+  document.getElementById('results').style.display='none';
+  document.getElementById('shareSection').style.display='none';
+  document.getElementById('uploadBtn2').addEventListener('click',function(){document.getElementById('photoInput2').click()});
+  document.getElementById('cameraBtn2').addEventListener('click',startCamera);
+  document.getElementById('photoInput2').addEventListener('change',function(e){const f=e.target.files[0];if(f)handleFile(f)});
+}
+
+function analyze(){
+  const img=document.getElementById('previewImg');
+  if(!img)return;
+  const canvas=document.getElementById('faceCanvas');
+  const w=img.naturalWidth||img.width;
+  const h=img.naturalHeight||img.height;
+  canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext('2d');
+  ctx.drawImage(img,0,0,w,h);
+
+  const regions=[
+    {id:'forehead',label:'額頭',x:w*.2,y:h*.02,w:w*.6,h:h*.2},
+    {id:'eyebrows',label:'眉',x:w*.15,y:h*.2,w:w*.7,h:h*.06},
+    {id:'eyes',label:'眼',x:w*.15,y:h*.27,w:w*.7,h:h*.08},
+    {id:'nose',label:'鼻',x:w*.35,y:h*.35,w:w*.3,h:h*.18},
+    {id:'mouth',label:'口',x:w*.25,y:h*.53,w:w*.5,h:h*.08},
+    {id:'chin',label:'下巴',x:w*.2,y:h*.62,w:w*.6,h:h*.25},
+    {id:'ears',label:'耳',x:w*.05,y:h*.22,w:w*.15,h:h*.25}
+  ];
+  regions.forEach(function(r){
+    ctx.fillStyle='rgba(255,215,0,0.08)';ctx.fillRect(r.x,r.y,r.w,r.h);
+    ctx.strokeStyle='#FFD700';ctx.lineWidth=1.5;ctx.globalAlpha=.4;ctx.setLineDash([4,3]);
+    ctx.strokeRect(r.x,r.y,r.w,r.h);ctx.setLineDash([]);
+    ctx.globalAlpha=.7;ctx.fillStyle='#FFD700';
+    ctx.font='bold '+Math.max(12,Math.round(h*.025))+'px "Noto Serif TC","SimSun",serif';
+    ctx.textAlign='center';ctx.fillText(r.label,r.x+r.w/2,r.y-4);ctx.globalAlpha=1;
+  });
+
+  const m={
+    foreheadRatio:.24+Math.random()*.14,eyebrowGap:.02+Math.random()*.05,
+    eyeRatio:.20+Math.random()*.12,noseRatio:.35+Math.random()*.15,
+    mouthRatio:.28+Math.random()*.14,chinRatio:.20+Math.random()*.12,
+    earRatio:.26+Math.random()*.12
+  };
+
+  const features={};
+  for(const[k,cfg]of Object.entries(FACE_READINGS)){
+    const t=cfg.traits.find(x=>x.condition(m))||cfg.traits[1];
+    features[k]={label:t.label,text:t.text,score:t.score,name:cfg.name};
+  }
+
+  const fortunes=FORTUNE_TYPES.map(function(ft){
+    let s=0;for(const[p,w]of Object.entries(ft.weight))s+=(features[p]?.score||50)*w;
+    const lvl=s>=80?'大吉':s>=65?'吉':s>=50?'中平':'末吉';
+    return{...ft,score:Math.round(s),level:lvl};
+  });
+
+  const scores=Object.values(features).map(x=>x.score);
+  const avg=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  const best=Object.entries(features).reduce((a,b)=>a[1].score>b[1].score?a:b);
+  const worst=Object.entries(features).reduce((a,b)=>a[1].score<b[1].score?a:b);
+  const ov=['面相綜合評分 '+avg+' 分。'+best[1].name+'最為出眾，是您運勢的強項；'+worst[1].name+'則需多加留意，可透過後天修養補足。','觀君面相，'+best[1].label+'格局已成，主一生順遂。'+worst[1].name+'雖有不足，然面相乃動態之相，善念善行可改之。','此面相'+(avg>=70?'格局上佳':avg>=55?'中正平和':'尚有可塑之處')+'。'+best[1].name+'顯示'+best[1].label+'之相，'+worst[1].name+'則需多加修持。'];
+
+  const rd=document.getElementById('results');
+  rd.style.display='block';
+  rd.innerHTML='<div class="results-container"><div class="results-header"><div class="bagua">☰</div><h2>面相分析報告</h2><p class="reading-time">⚡ '+fmt()+'</p></div><div class="section-title"><span class="ornament">◈</span> 五官解析 <span class="ornament">◈</span></div><div class="features-grid">'+Object.entries(features).map(function([k,v]){
+    return '<div class="feature-card" onclick="this.classList.toggle(\'expanded\')"><div class="feature-header"><span class="feature-name">'+v.name+'</span><span class="feature-label">「'+v.label+'」</span><span class="feature-score" style="color:'+(v.score>=70?'#00ff88':v.score>=50?'#ffd700':'#ff6b6b')+'">'+v.score+'分</span><span class="expand-hint">▼</span></div><div class="feature-detail"><p>'+v.text+'</p></div></div>';
+  }).join('')+'</div><div class="section-title"><span class="ornament">◈</span> 運勢總覽 <span class="ornament">◈</span></div><div class="fortunes-grid">'+fortunes.map(function(f){
+    return '<div class="fortune-card"><div class="fortune-icon">'+f.icon+'</div><div class="fortune-info"><h4>'+f.name+'</h4><div class="fortune-bar"><div class="fortune-fill" style="width:'+f.score+'%"></div></div><div class="fortune-footer"><span class="fortune-score">'+f.score+'分</span><span class="fortune-level level-'+f.level+'">'+f.level+'</span></div></div></div>';
+  }).join('')+'</div><div class="overall-section"><h3>📜 綜合命評</h3><p class="overall-text">'+ov[Math.floor(Math.random()*ov.length)]+'</p></div><div class="disclaimer">⚠️ 本分析僅供娛樂參考，命運掌握在自己手中</div></div>';
+  document.getElementById('shareSection').style.display='block';
+  rd.scrollIntoView({behavior:'smooth'});
+}
+
+function startCamera(){
+  if(isProcessing)return;
+  isProcessing=true;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    toast('⚠️ 相機需要 HTTPS 連線，請改用選擇照片');
+    isProcessing=false;return;
+  }
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:640,height:480}}).then(function(s){
+    cameraStream=s;
+    const v=document.createElement('video');
+    v.srcObject=s;v.play();
+    const m=document.createElement('div');m.className='modal';
+    m.innerHTML='<div class="modal-content"><h3>📸 拍照</h3><video id="cv" style="width:100%;max-width:500px;border-radius:8px"></video><div class="modal-actions"><button class="btn btn-secondary" onclick="this.closest(\'.modal\').remove();stopCam()">取消</button><button class="btn btn-primary" onclick="capture(this)">📸 拍照</button></div></div>';
+    document.body.appendChild(m);
+    setTimeout(function(){
+      const v2=document.getElementById('cv');
+      if(v2)v2.srcObject=s;
+    },100);
+  }).catch(function(){
+    const hint=document.getElementById('cameraHint');
+    if(hint){hint.textContent='⚠️ 無法開啟相機，請確認權限或改用選擇照片';hint.style.display='block'}
+    toast('⚠️ 無法開啟相機，請改用選擇照片');
+    isProcessing=false;
+  });
+}
+
+function stopCam(){
+  if(cameraStream){cameraStream.getTracks().forEach(function(t){t.stop()});cameraStream=null}
+  isProcessing=false;
+}
+
+function capture(btn){
+  const v=document.getElementById('cv');
+  const c=document.createElement('canvas');
+  c.width=v.videoWidth;c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  c.toBlob(function(b){
+    handleFile(new File([b],'photo.jpg',{type:'image/jpeg'}));
+    btn.closest('.modal').remove();
+    stopCam();
+  },'image/jpeg');
+}
+
+async function shareToDiscord(){
+  const wb=document.getElementById('webhookUrl');
+  const url=wb.value.trim();
+  if(!url){toast('⚠️ 請輸入 Discord Webhook 網址');wb.focus();return}
+  if(!url.startsWith('https://discord.com/api/webhooks/')){toast('⚠️ Webhook 網址格式不正確');return}
+
+  const btn=document.querySelector('.share-btn');
+  btn.disabled=true;btn.textContent='⏳ 上傳中...';
+
+  try{
+    const img=document.getElementById('previewImg');
+    const tc=document.createElement('canvas');
+    tc.width=img.naturalWidth||img.width;tc.height=img.naturalHeight||img.height;
+    tc.getContext('2d').drawImage(img,0,0);
+    const id=tc.toDataURL('image/jpeg',0.9);
+    const blob=await(await fetch(id)).blob();
+    const fd=new FormData();
+    fd.append('file',blob,'face_reading.jpg');
+
+    let msg='**🔮 面相分析結果**\n⏰ '+fmt()+'\n\n**📋 五官解析：**\n';
+    document.querySelectorAll('.feature-card').forEach(function(c){
+      const n=c.querySelector('.feature-name')?.textContent||'';
+      const l=c.querySelector('.feature-label')?.textContent||'';
+      const s=c.querySelector('.feature-score')?.textContent||'';
+      msg+='▸ '+n+' '+l+' — '+s+'\n';
+    });
+    msg+='\n**📊 運勢總覽：**\n';
+    document.querySelectorAll('.fortune-card').forEach(function(c){
+      const n=c.querySelector('h4')?.textContent||'';
+      const s=c.querySelector('.fortune-score')?.textContent||'';
+      const l=c.querySelector('.fortune-level')?.textContent||'';
+      msg+='▸ '+n+' '+s+' ['+l+']\n';
+    });
+    const ov=document.querySelector('.overall-text')?.textContent||'';
+    msg+='\n**📜 綜合命評：**\n'+ov;
+
+    fd.append('payload_json',JSON.stringify({content:msg,embeds:[{title:'📷 面相照片',image:{url:'attachment://face_reading.jpg'},color:0xFFD700}]}));
+    const r=await fetch(url,{method:'POST',body:fd});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    toast('✅ 已成功分享到 Discord！');
+  }catch(e){console.error(e);toast('⚠️ 分享失敗，請檢查 Webhook 網址')}
+  finally{btn.disabled=false;btn.textContent='📤 分享到 Discord'}
+}
+</script>
 </body>
 </html>
