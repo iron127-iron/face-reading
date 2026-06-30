@@ -113,8 +113,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <p>請上傳清晰的正面照片（JPG / PNG）</p>
       <input type="file" id="photoInput" accept="image/*" style="display:none">
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-primary" id="uploadBtn">📁 選擇照片</button>
-        <button class="btn btn-secondary" id="cameraBtn">📸 拍照</button>
+        <button class="btn btn-primary" onclick="pickFile()">📁 選擇照片</button>
+        <button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button>
       </div>
       <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
     </div>
@@ -130,7 +130,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         placeholder="請輸入 Discord Webhook 網址..."
         value="https://discord.com/api/webhooks/1521349729576030379/okpV67K1t8RF3IIDKW3uHs6LN3arJ_KWLTXUvsWvF2zolsaJqmaXWImpvs4ScGCr-tpx">
       </div>
-      <button class="share-btn" id="shareBtn">📤 分享到 Discord</button>
+      <button class="share-btn" onclick="shareToDiscord()">📤 分享到 Discord</button>
     </div>
   </section>
 
@@ -155,10 +155,9 @@ function toast(msg){
   setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000);
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  const st=document.getElementById('modelStatus');
-  st.innerHTML='✅ 面相分析已就緒，請上傳照片';
-  st.style.color='#00ff88';
+function init(){
+  document.getElementById('modelStatus').innerHTML='✅ 面相分析已就緒，請上傳照片';
+  document.getElementById('modelStatus').style.color='#00ff88';
   document.getElementById('uploadSection').style.display='block';
 
   const sec=window.location.protocol==='https:'||window.location.hostname==='localhost';
@@ -168,12 +167,9 @@ document.addEventListener('DOMContentLoaded',function(){
     hint.style.display='block';
   }
 
-  document.getElementById('uploadBtn').addEventListener('click',function(){document.getElementById('photoInput').click()});
-  document.getElementById('cameraBtn').addEventListener('click',startCamera);
   document.getElementById('photoInput').addEventListener('change',function(e){
     const f=e.target.files[0];if(f)handleFile(f);
   });
-  document.getElementById('shareBtn').addEventListener('click',shareToDiscord);
 
   const wa=document.querySelector('.upload-area');
   if(wa){
@@ -189,7 +185,11 @@ document.addEventListener('DOMContentLoaded',function(){
 
   const wb=document.getElementById('webhookUrl');
   if(wb)wb.addEventListener('change',function(){localStorage.setItem('discord_webhook',wb.value)});
-});
+}
+
+function pickFile(){document.getElementById('photoInput').click()}
+
+document.addEventListener('DOMContentLoaded',init);
 
 function handleFile(file){
   const r=new FileReader();
@@ -212,12 +212,10 @@ function handleFile(file){
 }
 
 function resetUpload(){
-  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput2" accept="image/*" style="display:none"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" id="uploadBtn2">📁 選擇照片</button><button class="btn btn-secondary" id="cameraBtn2">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
+  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput" accept="image/*" style="display:none"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="pickFile()">📁 選擇照片</button><button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
   document.getElementById('results').style.display='none';
   document.getElementById('shareSection').style.display='none';
-  document.getElementById('uploadBtn2').addEventListener('click',function(){document.getElementById('photoInput2').click()});
-  document.getElementById('cameraBtn2').addEventListener('click',startCamera);
-  document.getElementById('photoInput2').addEventListener('change',function(e){const f=e.target.files[0];if(f)handleFile(f)});
+  document.getElementById('photoInput').addEventListener('change',function(e){const f=e.target.files[0];if(f)handleFile(f)});
 }
 
 function analyze(){
