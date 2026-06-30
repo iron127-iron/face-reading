@@ -87,7 +87,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .modal-content{background:#1a1a2e;border:1px solid rgba(255,215,0,.15);border-radius:16px;padding:28px;max-width:540px;width:90%;text-align:center}
 .modal-content h3{color:#ffd700;margin-bottom:14px}
 .modal-actions{display:flex;gap:12px;justify-content:center;margin-top:16px}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(20,15,10,.95);border:1px solid rgba(255,215,0,.2);color:#e0d5c1;padding:14px 28px;border-radius:10px;font-family:inherit;font-size:14px;z-index:2000;opacity:0;transition:all .3s;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(10,8,5,.98);border:2px solid #ffd700;color:#ffd700;padding:16px 32px;border-radius:12px;font-family:inherit;font-size:16px;font-weight:700;z-index:9999;opacity:0;transition:all .4s ease;box-shadow:0 8px 40px rgba(0,0,0,.8),0 0 20px rgba(255,215,0,.15);pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .footer{text-align:center;padding:32px 20px;color:#333;font-size:12px;letter-spacing:2px}
 ::-webkit-scrollbar{width:6px}
@@ -330,6 +330,8 @@ async function shareToDiscord(){
   const url=wb.value.trim();
   if(!url){toast('⚠️ 請輸入 Discord Webhook 網址');wb.focus();return}
   if(!url.startsWith('https://discord.com/api/webhooks/')){toast('⚠️ Webhook 網址格式不正確');return}
+
+  if(!confirm('確定要將面相分析結果分享到 Discord 嗎？'))return;
 
   const btn=document.querySelector('.share-btn');
   btn.disabled=true;btn.textContent='⏳ 上傳中...';
