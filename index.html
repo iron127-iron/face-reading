@@ -109,12 +109,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <section id="uploadSection" style="display:none;">
     <div class="upload-area" id="uploadArea">
       <div class="upload-icon">☯</div>
-      <h3>上傳照片看面相</h3>
-      <p>請上傳清晰的正面照片（JPG / PNG）</p>
-      <input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="position:absolute;opacity:0;width:1px;height:1px;z-index:-1">
+      <h3>拍照看面相</h3>
+      <p>請允許相機權限，拍攝清晰的正面照</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-        <label for="photoInput" class="btn btn-primary" style="cursor:pointer">📁 選擇照片</label>
-        <button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button>
+        <button class="btn btn-primary" onclick="startCamera()">📸 開啟相機拍照</button>
       </div>
       <p id="cameraHint" style="font-size:12px;color:#666;margin-top:12px;display:none"></p>
     </div>
@@ -163,20 +161,8 @@ function init(){
   const sec=window.location.protocol==='https:'||window.location.hostname==='localhost';
   const hint=document.getElementById('cameraHint');
   if(!sec&&hint){
-    hint.textContent='💡 目前使用 HTTP，相機僅支援 HTTPS。請用「選擇照片」';
+    hint.textContent='💡 相機需要 HTTPS 連線才能使用，請部署到 Vercel 等平台';
     hint.style.display='block';
-  }
-
-  const wa=document.querySelector('.upload-area');
-  if(wa){
-    wa.addEventListener('dragover',function(e){e.preventDefault()});
-    wa.addEventListener('dragleave',function(e){e.preventDefault()});
-    wa.addEventListener('drop',function(e){
-      e.preventDefault();
-      const f=e.dataTransfer.files[0];
-      if(f&&f.type.startsWith('image/'))handleFile(f);
-      else toast('⚠️ 請上傳圖片檔案');
-    });
   }
 
   const wb=document.getElementById('webhookUrl');
@@ -185,7 +171,6 @@ function init(){
 
 document.addEventListener('DOMContentLoaded',init);
 
-function handleFileUpload(e){const f=e.target.files[0];if(f)handleFile(f)}
 function handleFile(file){
   const r=new FileReader();
   r.onload=function(e){
@@ -207,7 +192,7 @@ function handleFile(file){
 }
 
 function resetUpload(){
-  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>上傳照片看面相</h3><p>請上傳清晰的正面照片（JPG / PNG）</p><input type="file" id="photoInput" accept="image/*" onchange="handleFileUpload(event)" style="position:absolute;opacity:0;width:1px;height:1px;z-index:-1"><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><label for="photoInput" class="btn btn-primary" style="cursor:pointer">📁 選擇照片</label><button class="btn btn-secondary" onclick="startCamera()">📸 拍照</button></div><p style="font-size:12px;color:#666;margin-top:12px;display:none"></p></div>';
+  document.getElementById('uploadSection').innerHTML='<div class="upload-area"><div class="upload-icon">☯</div><h3>拍照看面相</h3><p>請允許相機權限，拍攝清晰的正面照</p><div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="startCamera()">📸 開啟相機拍照</button></div></div>';
   document.getElementById('results').style.display='none';
   document.getElementById('shareSection').style.display='none';
 }
